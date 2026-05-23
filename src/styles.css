@@ -1,0 +1,146 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  background: #fffdf8;
+  color: #0b0b0a;
+  font-family: Inter, ui-sans-serif, system-ui, sans-serif;
+}
+
+::selection {
+  background: #b89b58;
+  color: #fffdf8;
+}
+
+@layer components {
+  .section-padding {
+    @apply py-20 sm:py-24 lg:py-28;
+  }
+
+  .eyebrow {
+    @apply text-xs font-black uppercase tracking-[0.24em] text-gold;
+  }
+
+  .section-title {
+    @apply mt-3 text-4xl font-black leading-[1.02] tracking-tight text-ink sm:text-5xl;
+  }
+
+  .section-copy {
+    @apply mt-5 text-base leading-8 text-smoke sm:text-lg;
+  }
+
+  .nav-link {
+    @apply text-sm font-bold text-smoke transition hover:text-ink;
+  }
+
+  .badge {
+    @apply inline-flex rounded-full border border-ink/10 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-ink shadow-sm;
+  }
+
+  .mini-pill {
+    @apply inline-flex items-center gap-2 rounded-full border border-ink/10 bg-white px-4 py-2 shadow-sm;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full bg-ink px-6 py-4 text-sm font-black text-paper transition duration-300 hover:-translate-y-1 hover:bg-black hover:shadow-soft;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-full border border-ink/10 bg-white px-6 py-4 text-sm font-black text-ink transition duration-300 hover:-translate-y-1 hover:border-gold/60 hover:bg-chalk;
+  }
+
+  .form-field {
+    @apply block text-sm font-black text-ink;
+  }
+
+  .form-field span {
+    @apply mb-2 block;
+  }
+
+  .form-field input,
+  .form-field select,
+  .form-field textarea {
+    @apply w-full rounded-2xl border border-ink/10 bg-paper px-4 py-4 text-sm font-bold text-ink outline-none transition placeholder:text-smoke/65 focus:border-gold focus:bg-white focus:ring-4 focus:ring-gold/10;
+  }
+
+  .form-field textarea {
+    @apply resize-none leading-6;
+  }
+}
+
+.subtle-grid {
+  background-image:
+    linear-gradient(rgba(11, 11, 10, 0.045) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(11, 11, 10, 0.045) 1px, transparent 1px);
+  background-size: 42px 42px;
+  mask-image: linear-gradient(to bottom, black, transparent 88%);
+}
+
+.product-shirt {
+  position: absolute;
+  left: 50%;
+  width: min(68%, 310px);
+  height: 46%;
+  transform: translateX(-50%);
+  background:
+    radial-gradient(circle at 50% 7%, #dedbd3 0 10%, transparent 10.5%),
+    linear-gradient(110deg, transparent 0 16%, #f8f7f2 16% 83%, transparent 83%),
+    linear-gradient(90deg, #efede7, #fffdf8 44%, #e5e1d8);
+  border-radius: 22% 22% 15% 15%;
+  box-shadow: 0 30px 70px rgba(11, 11, 10, 0.16);
+}
+
+.product-shirt::before,
+.product-shirt::after {
+  content: "";
+  position: absolute;
+  top: 18%;
+  width: 32%;
+  height: 34%;
+  background: linear-gradient(135deg, #f7f6f2, #dfdbd0);
+  border-radius: 28% 35% 45% 45%;
+}
+
+.product-shirt::before {
+  left: -18%;
+  transform: rotate(18deg);
+}
+
+.product-shirt::after {
+  right: -18%;
+  transform: rotate(-18deg);
+}
+
+.product-shirt span {
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translateX(-50%);
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.42em;
+  color: rgba(11, 11, 10, 0.7);
+}
+
+.shirt-back {
+  top: 13%;
+  opacity: 0.65;
+  transform: translateX(-54%) rotate(-8deg) scale(0.92);
+}
+
+.shirt-front {
+  top: 21%;
+  transform: translateX(-45%) rotate(7deg);
+}
