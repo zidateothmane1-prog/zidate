@@ -2,7 +2,7 @@ import { useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, CheckCircle2, Loader2, PackageCheck } from "lucide-react";
 import { offers, products } from "../data/products";
-import { hasSupabaseConfig, supabase } from "../lib/supabaseClient";
+import { hasSupabaseConfig, publicSupabase } from "../lib/supabaseClient";
 
 const SIZES = ["S", "M", "L", "XL", "XXL"];
 
@@ -73,7 +73,7 @@ export default function OrderForm({ selectedProduct = products[0], selectedOffer
 
     if (Object.keys(nextErrors).length > 0) return;
 
-    if (!hasSupabaseConfig || !supabase) {
+    if (!hasSupabaseConfig || !publicSupabase) {
       setSubmitStatus({
         type: "error",
         message: "Supabase is not configured yet. Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY.",
@@ -101,7 +101,7 @@ export default function OrderForm({ selectedProduct = products[0], selectedOffer
       status: "new",
     };
 
-    const { error } = await supabase.from("orders").insert(payload);
+    const { error } = await publicSupabase.from("orders").insert(payload);
 
     setIsSubmitting(false);
 

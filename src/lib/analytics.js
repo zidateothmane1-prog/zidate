@@ -1,4 +1,4 @@
-import { hasSupabaseConfig, supabase } from "./supabaseClient";
+import { hasSupabaseConfig, publicSupabase } from "./supabaseClient";
 
 function createId(prefix) {
   if (crypto?.randomUUID) return `${prefix}_${crypto.randomUUID()}`;
@@ -22,7 +22,7 @@ export function getVisitorIds() {
 }
 
 export async function trackPageView(pathname) {
-  if (!hasSupabaseConfig || !supabase) return;
+  if (!hasSupabaseConfig || !publicSupabase) return;
   if (!["/", "/products", "/offers", "/why-zidate", "/order"].includes(pathname)) return;
 
   const lastTracked = sessionStorage.getItem("zidate_last_tracked_path");
@@ -32,7 +32,7 @@ export async function trackPageView(pathname) {
   const { visitorId, sessionId } = getVisitorIds();
 
   try {
-    await supabase.from("page_views").insert({
+    await publicSupabase.from("page_views").insert({
       page_path: pathname,
       page_title: document.title,
       referrer: document.referrer || null,

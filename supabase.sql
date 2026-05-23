@@ -34,11 +34,14 @@ alter table public.orders
 
 alter table public.orders enable row level security;
 
+grant insert on public.orders to anon, authenticated;
+grant select, update on public.orders to authenticated;
+
 drop policy if exists "Allow public order inserts" on public.orders;
 create policy "Allow public order inserts"
 on public.orders
 for insert
-to anon
+to anon, authenticated
 with check (true);
 
 drop policy if exists "Allow admin read orders" on public.orders;
@@ -46,15 +49,15 @@ create policy "Allow admin read orders"
 on public.orders
 for select
 to authenticated
-using ((auth.jwt() ->> 'email') = 'zidateothmane1@gmail.com');
+using (auth.email() = 'zidateothmane1@gmail.com');
 
 drop policy if exists "Allow admin update orders" on public.orders;
 create policy "Allow admin update orders"
 on public.orders
 for update
 to authenticated
-using ((auth.jwt() ->> 'email') = 'zidateothmane1@gmail.com')
-with check ((auth.jwt() ->> 'email') = 'zidateothmane1@gmail.com');
+using (auth.email() = 'zidateothmane1@gmail.com')
+with check (auth.email() = 'zidateothmane1@gmail.com');
 
 create table if not exists public.page_views (
   id uuid primary key default gen_random_uuid(),
@@ -69,11 +72,14 @@ create table if not exists public.page_views (
 
 alter table public.page_views enable row level security;
 
+grant insert on public.page_views to anon, authenticated;
+grant select on public.page_views to authenticated;
+
 drop policy if exists "Allow public page view inserts" on public.page_views;
 create policy "Allow public page view inserts"
 on public.page_views
 for insert
-to anon
+to anon, authenticated
 with check (true);
 
 drop policy if exists "Allow admin read page views" on public.page_views;
@@ -81,4 +87,4 @@ create policy "Allow admin read page views"
 on public.page_views
 for select
 to authenticated
-using ((auth.jwt() ->> 'email') = 'zidateothmane1@gmail.com');
+using (auth.email() = 'zidateothmane1@gmail.com');

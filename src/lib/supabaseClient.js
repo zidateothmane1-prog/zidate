@@ -13,3 +13,14 @@ export const supabase = hasSupabaseConfig
       },
     })
   : null;
+
+export const publicSupabase = hasSupabaseConfig
+  ? createClient(supabaseUrl, supabaseAnonKey, {
+      auth: {
+        persistSession: false,
+        autoRefreshToken: false,
+        detectSessionInUrl: false,
+        storageKey: "zidate_public_order_client",
+      },
+    })
+  : null;
