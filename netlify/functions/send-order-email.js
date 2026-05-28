@@ -2,8 +2,17 @@ const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "zidateothmane1@gmail.com";
 const EMAIL_FROM = process.env.EMAIL_FROM || "orders@yourdomain.com";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
 
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
 function field(label, value) {
-  return `<tr><td style="padding:8px 12px;font-weight:700;color:#77736a;">${label}</td><td style="padding:8px 12px;color:#0b0b0a;">${value || "-"}</td></tr>`;
+  return `<tr><td style="padding:8px 12px;font-weight:700;color:#77736a;">${escapeHtml(label)}</td><td style="padding:8px 12px;color:#0b0b0a;">${escapeHtml(value || "-")}</td></tr>`;
 }
 
 exports.handler = async (event) => {
@@ -12,12 +21,30 @@ exports.handler = async (event) => {
   }
 
   if (!RESEND_API_KEY) {
-    console.error("Missing RESEND_API_KEY");
-    return { statusCode: 500, body: JSON.stringify({ error: "Email service is not configured" }) };
+    console.error("ZIDATE notification failed: missing RESEND_API_KEY");
+    return {
+      statusCode: 500,
+      body: JSON.stringify({
+        error: "Email service is not configured",
+        missing: "RESEND_API_KEY",
+      }),
+    };
   }
 
   try {
     const order = JSON.parse(event.body || "{}");
+
+    if (!order.first_name || !order.last_name || !order.phone || !order.city || !order.offer) {
+      console.error("ZIDATE notification failed: incomplete order payload", {
+        hasFirstName: Boolean(order.first_name),
+        hasLastName: Boolean(order.last_name),
+        hasPhone: Boolean(order.phone),
+        hasCity: Boolean(order.city),
+        hasOffer: Boolean(order.offer),
+      });
+      return { statusCode: 400, body: JSON.stringify({ error: "Incomplete order payload" }) };
+    }
+
     const html = `
       <div style="font-family:Arial,sans-serif;background:#fffdf8;padding:24px;">
         <h1 style="color:#0b0b0a;letter-spacing:2px;">New ZIDATE COD Order</h1>
@@ -58,9 +85,27 @@ exports.handler = async (event) => {
 
     if (!response.ok) {
       const details = await response.text();
-      console.error("Resend email failed", details);
-      return { statusCode: 502, body: JSON.stringify({ error: "Email send failed" }) };
+      console.error("ZIDATE Resend email failed", {
+        status: response.status,
+        adminEmail: ADMIN_EMAIL,
+        emailFrom: EMAIL_FROM,
+        details,
+      });
+      return {
+        statusCode: 502,
+        body: JSON.stringify({
+          error: "Email send failed",
+          providerStatus: response.status,
+        }),
+      };
     }
+
+    console.log("ZIDATE order email notification sent", {
+      adminEmail: ADMIN_EMAIL,
+      phone: order.phone,
+      city: order.city,
+      offer: order.offer,
+    });
 
     return { statusCode: 200, body: JSON.stringify({ ok: true }) };
   } catch (error) {

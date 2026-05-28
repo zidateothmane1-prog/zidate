@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+﻿import { useEffect, useMemo, useState } from "react";
 import { Link, Navigate, NavLink, Outlet, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BarChart3, LogOut, PackageCheck, Search, ShieldCheck } from "lucide-react";
@@ -94,10 +94,10 @@ export function AdminLogin() {
   };
 
   return (
-    <main className="min-h-screen bg-chalk px-5 py-24">
+    <main className="min-h-screen overflow-x-hidden bg-chalk px-4 py-16 sm:px-5 sm:py-24">
       <motion.form
         onSubmit={handleSubmit}
-        className="mx-auto max-w-md rounded-[2rem] border border-ink/10 bg-white p-7 shadow-soft"
+        className="mx-auto max-w-md rounded-[2rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-7"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
       >
@@ -152,8 +152,8 @@ export function ProtectedAdminRoute() {
 
   if (state.user.email !== ADMIN_EMAIL) {
     return (
-      <main className="min-h-screen bg-chalk px-5 py-24">
-        <div className="mx-auto max-w-xl rounded-[2rem] border border-ink/10 bg-white p-8 shadow-soft">
+      <main className="min-h-screen overflow-x-hidden bg-chalk px-4 py-16 sm:px-5 sm:py-24">
+        <div className="mx-auto max-w-xl rounded-[2rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-8">
           <ShieldCheck className="text-gold" />
           <h1 className="mt-4 text-3xl font-black text-ink">Unauthorized</h1>
           <p className="mt-4 text-sm leading-7 text-smoke">This account is authenticated but is not allowed to view ZIDATE admin data.</p>
@@ -167,8 +167,8 @@ export function ProtectedAdminRoute() {
 
 function AdminLoading({ label = "Loading..." }) {
   return (
-    <main className="min-h-screen bg-chalk px-5 py-24">
-      <div className="mx-auto max-w-md rounded-[2rem] border border-ink/10 bg-white p-8 text-center shadow-soft">
+    <main className="min-h-screen overflow-x-hidden bg-chalk px-4 py-16 sm:px-5 sm:py-24">
+      <div className="mx-auto max-w-md rounded-[2rem] border border-ink/10 bg-white p-6 text-center shadow-soft sm:p-8">
         <p className="text-sm font-black text-ink">{label}</p>
       </div>
     </main>
@@ -184,24 +184,24 @@ export function AdminLayout() {
   };
 
   return (
-    <main className="min-h-screen bg-chalk">
+    <main className="min-h-screen overflow-x-hidden bg-chalk">
       <header className="sticky top-0 z-40 border-b border-ink/10 bg-paper/90 backdrop-blur-xl">
-        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
-          <div>
+        <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-5 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
+          <div className="min-w-0">
             <p className="text-xl font-black tracking-[0.3em] text-ink">ZIDATE</p>
             <p className="text-xs font-black uppercase tracking-[0.22em] text-smoke">Admin Console</p>
           </div>
-          <nav className="flex flex-wrap gap-2">
+          <nav className="flex gap-2 overflow-x-auto pb-1 sm:flex-wrap sm:overflow-visible sm:pb-0">
             {[
               ["Dashboard", "/admin/dashboard"],
               ["Orders", "/admin/orders"],
               ["Analytics", "/admin/analytics"],
             ].map(([label, path]) => (
-              <NavLink key={path} to={path} className={({ isActive }) => `rounded-full px-4 py-2 text-sm font-black ${isActive ? "bg-ink text-paper" : "bg-white text-ink"}`}>
+              <NavLink key={path} to={path} className={({ isActive }) => `shrink-0 rounded-full px-4 py-3 text-sm font-black sm:py-2 ${isActive ? "bg-ink text-paper" : "bg-white text-ink"}`}>
                 {label}
               </NavLink>
             ))}
-            <button onClick={logout} className="inline-flex items-center gap-2 rounded-full bg-white px-4 py-2 text-sm font-black text-ink">
+            <button onClick={logout} className="inline-flex shrink-0 items-center gap-2 rounded-full bg-white px-4 py-3 text-sm font-black text-ink sm:py-2">
               <LogOut size={16} /> Logout
             </button>
           </nav>
@@ -214,15 +214,15 @@ export function AdminLayout() {
 
 function StatCard({ label, value, hint }) {
   return (
-    <div className="rounded-3xl border border-ink/10 bg-white p-5 shadow-sm">
+    <div className="min-w-0 rounded-3xl border border-ink/10 bg-white p-5 shadow-sm">
       <p className="text-xs font-black uppercase tracking-[0.2em] text-smoke">{label}</p>
-      <p className="mt-3 text-3xl font-black text-ink">{value}</p>
+      <p className="mt-3 break-words text-3xl font-black text-ink">{value}</p>
       {hint && <p className="mt-2 text-xs font-bold text-smoke">{hint}</p>}
     </div>
   );
 }
 
-function useAdminData() {
+function useAdminData({ refreshMs = 15000 } = {}) {
   const [state, setState] = useState({ loading: true, error: "", orders: [], pageViews: [] });
 
   const load = async () => {
@@ -252,7 +252,11 @@ function useAdminData() {
 
   useEffect(() => {
     load();
-  }, []);
+    if (!refreshMs) return undefined;
+
+    const intervalId = window.setInterval(load, refreshMs);
+    return () => window.clearInterval(intervalId);
+  }, [refreshMs]);
 
   return { ...state, reload: load };
 }
@@ -292,12 +296,12 @@ export function AdminDashboard() {
   if (loading) return <AdminLoading />;
 
   return (
-    <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-7xl overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8">
       <p className="eyebrow">Dashboard</p>
       <h1 className="section-title">ZIDATE overview.</h1>
       {error && <p className="mt-6 rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-800">{error}</p>}
       {!error && orders.length === 0 && <p className="mt-6 rounded-2xl bg-white p-4 text-sm font-bold text-smoke">No orders yet. New COD orders will appear here.</p>}
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total orders" value={stats.totalOrders} />
         <StatCard label="New orders" value={stats.newOrders} />
         <StatCard label="Confirmed" value={stats.confirmed} />
@@ -370,13 +374,13 @@ export function AdminOrders() {
   if (loading) return <AdminLoading />;
 
   return (
-    <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-7xl overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8">
       <p className="eyebrow">Orders</p>
       <h1 className="section-title">Manage COD orders.</h1>
       {error && <p className="mt-6 rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-800">{error}</p>}
       {message && <p className="mt-6 rounded-2xl bg-white p-4 text-sm font-bold text-ink">{message}</p>}
 
-      <div className="mt-8 grid gap-3 lg:grid-cols-[1fr_auto_auto_auto]">
+      <div className="mt-8 grid min-w-0 gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_auto_auto_auto]">
         <label className="form-field">
           <span>Search</span>
           <div className="relative">
@@ -434,30 +438,30 @@ export function AdminOrders() {
         </table>
       </div>
 
-      <div className="mt-8 grid gap-4 lg:hidden">
+      <div className="mt-8 grid min-w-0 gap-4 lg:hidden">
         {filtered.map((order) => (
-          <button key={order.id} onClick={() => setSelected(order)} className="rounded-3xl border border-ink/10 bg-white p-5 text-left shadow-sm">
+          <button key={order.id} onClick={() => setSelected(order)} className="min-w-0 rounded-3xl border border-ink/10 bg-white p-5 text-left shadow-sm">
             <div className="flex items-start justify-between gap-4">
-              <div>
+              <div className="min-w-0">
                 <p className="text-lg font-black text-ink">{order.first_name} {order.last_name}</p>
-                <p className="mt-1 text-sm font-bold text-smoke">{order.city} · {order.phone}</p>
+                <p className="mt-1 break-words text-sm font-bold text-smoke">{order.city} - {order.phone}</p>
               </div>
               <StatusBadge status={order.status} />
             </div>
-            <p className="mt-4 text-sm font-bold text-ink">{order.offer} · {order.size} · {estimatedTotal(order)} DH</p>
+            <p className="mt-4 break-words text-sm font-bold text-ink">{order.offer} - {order.size} - {estimatedTotal(order)} DH</p>
           </button>
         ))}
       </div>
 
       {selected && (
-        <div className="fixed inset-0 z-50 bg-black/40 p-4 backdrop-blur-sm" onClick={() => setSelected(null)}>
-          <div className="ml-auto h-full max-w-xl overflow-y-auto rounded-[2rem] bg-paper p-6 shadow-soft" onClick={(event) => event.stopPropagation()}>
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/40 p-3 backdrop-blur-sm sm:p-4" onClick={() => setSelected(null)}>
+          <div className="ml-auto min-h-full w-full max-w-xl overflow-y-auto rounded-[1.5rem] bg-paper p-4 shadow-soft sm:rounded-[2rem] sm:p-6" onClick={(event) => event.stopPropagation()}>
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="eyebrow">Order detail</p>
                 <h2 className="mt-2 text-2xl font-black text-ink">{selected.first_name} {selected.last_name}</h2>
               </div>
-              <button onClick={() => setSelected(null)} className="rounded-full bg-white px-4 py-2 text-sm font-black">Close</button>
+              <button onClick={() => setSelected(null)} className="min-h-10 shrink-0 rounded-full bg-white px-4 py-2 text-sm font-black">Close</button>
             </div>
             <div className="mt-6 grid gap-3 text-sm font-bold text-smoke">
               {[
@@ -512,12 +516,12 @@ export function AdminAnalytics() {
   if (loading) return <AdminLoading />;
 
   return (
-    <section className="mx-auto max-w-7xl px-5 py-10 sm:px-6 lg:px-8">
+    <section className="mx-auto max-w-7xl overflow-x-hidden px-4 py-10 sm:px-6 lg:px-8">
       <p className="eyebrow">Analytics</p>
       <h1 className="section-title">Visitor analytics.</h1>
       {error && <p className="mt-6 rounded-2xl bg-red-50 p-4 text-sm font-bold text-red-800">{error}</p>}
       {!error && pageViews.length === 0 && <p className="mt-6 rounded-2xl bg-white p-4 text-sm font-bold text-smoke">No page views tracked yet.</p>}
-      <div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mt-8 grid min-w-0 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         <StatCard label="Total visitors" value={stats.totalVisitors} />
         <StatCard label="Total page views" value={stats.totalPageViews} />
         <StatCard label="Today visitors" value={stats.todayVisitors} />
@@ -526,7 +530,7 @@ export function AdminAnalytics() {
         <StatCard label="Conversion estimate" value={stats.conversion} hint="Total orders / total visitors" />
       </div>
 
-      <div className="mt-8 grid gap-6 lg:grid-cols-2">
+      <div className="mt-8 grid min-w-0 gap-6 lg:grid-cols-2">
         <div className="rounded-[1.5rem] border border-ink/10 bg-white p-6 shadow-sm">
           <h2 className="text-xl font-black text-ink">Most visited pages</h2>
           <div className="mt-5 space-y-3">
@@ -558,8 +562,8 @@ export function AdminAnalytics() {
         </div>
         <div className="divide-y divide-ink/10">
           {pageViews.slice(0, 20).map((view) => (
-            <div key={view.id} className="grid gap-2 p-5 text-sm font-bold text-smoke md:grid-cols-[1fr_1fr_auto]">
-              <p className="text-ink">{view.page_path}</p>
+            <div key={view.id} className="grid min-w-0 gap-2 p-5 text-sm font-bold text-smoke md:grid-cols-[1fr_1fr_auto]">
+              <p className="break-words text-ink">{view.page_path}</p>
               <p className="truncate">{view.referrer || "Direct"}</p>
               <p>{formatDate(view.created_at)}</p>
             </div>
@@ -569,3 +573,4 @@ export function AdminAnalytics() {
     </section>
   );
 }
+

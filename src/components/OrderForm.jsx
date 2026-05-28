@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { motion } from "framer-motion";
 import { AlertCircle, CheckCircle2, Loader2, PackageCheck } from "lucide-react";
 import { offers, products } from "../data/products";
@@ -8,15 +8,15 @@ const SIZES = ["S", "M", "L", "XL", "XXL"];
 
 function createInitialForm(selectedOffer) {
   return {
-  firstName: "",
-  lastName: "",
-  phone: "",
-  city: "",
-  address: "",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    city: "",
+    address: "",
     offer: selectedOffer?.label || offers[1].label,
-  size: "",
-  quantity: 1,
-  notes: "",
+    size: "",
+    quantity: 1,
+    notes: "",
   };
 }
 
@@ -40,7 +40,7 @@ function FieldError({ message }) {
   return <p className="mt-2 text-xs font-bold text-red-700">{message}</p>;
 }
 
-export default function OrderForm({ selectedProduct = products[0], selectedOffer = offers[1] }) {
+export default function OrderForm({ selectedProduct = products[0], selectedOffer = offers[1], onSelectionChange }) {
   const [form, setForm] = useState(() => createInitialForm(selectedOffer));
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -56,6 +56,18 @@ export default function OrderForm({ selectedProduct = products[0], selectedOffer
     const selected = offers.find((offer) => offer.label === form.offer) || selectedOffer;
     return selected.price * Number(form.quantity || 1);
   }, [form.offer, form.quantity, selectedOffer]);
+
+  const selectedOfferData = useMemo(() => {
+    return offers.find((offer) => offer.label === form.offer) || selectedOffer;
+  }, [form.offer, selectedOffer]);
+
+  useEffect(() => {
+    onSelectionChange?.({
+      offer: selectedOfferData,
+      quantity: Number(form.quantity || 1),
+      estimatedTotal,
+    });
+  }, [estimatedTotal, form.quantity, onSelectionChange, selectedOfferData]);
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
@@ -94,18 +106,26 @@ export default function OrderForm({ selectedProduct = products[0], selectedOffer
       product_slug: selectedProduct.slug,
       offer: form.offer,
       size: form.size,
-      quantity: Number(form.quantity),
+      quantity: Math.max(1, Number(form.quantity || 1)),
       estimated_total: estimatedTotal,
       notes: form.notes.trim() || null,
       payment_method: "Cash on Delivery",
       status: "new",
     };
 
+    const createdAt = new Date().toISOString();
     const { error } = await publicSupabase.from("orders").insert(payload);
 
-    setIsSubmitting(false);
-
     if (error) {
+      setIsSubmitting(false);
+      if (import.meta.env.DEV) {
+        console.error("ZIDATE order insert failed", {
+          message: error.message,
+          details: error.details,
+          hint: error.hint,
+          code: error.code,
+        });
+      }
       setSubmitStatus({
         type: "error",
         message: "Order could not be sent. Please try again or contact us by DM.",
@@ -113,14 +133,38 @@ export default function OrderForm({ selectedProduct = products[0], selectedOffer
       return;
     }
 
-    fetch("/.netlify/functions/send-order-email", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ ...payload, created_at: new Date().toISOString() }),
-    }).catch((emailError) => {
-      console.warn("Order email notification failed", emailError);
-    });
+    let timeoutId;
+    try {
+      const controller = new AbortController();
+      timeoutId = window.setTimeout(() => controller.abort(), 8000);
+      const notificationResponse = await fetch("/.netlify/functions/send-order-email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          ...payload,
+          created_at: createdAt,
+        }),
+      });
 
+      if (!notificationResponse.ok) {
+        if (import.meta.env.DEV) {
+          const details = await notificationResponse.text();
+          console.warn("ZIDATE order saved, but email notification failed", {
+            status: notificationResponse.status,
+            details,
+          });
+        }
+      }
+    } catch (emailError) {
+      if (import.meta.env.DEV) {
+        console.warn("ZIDATE order saved, but email notification request failed", emailError);
+      }
+    } finally {
+      if (timeoutId) window.clearTimeout(timeoutId);
+    }
+
+    setIsSubmitting(false);
     setForm(createInitialForm(selectedOffer));
     setErrors({});
     setSubmitStatus({
@@ -139,7 +183,7 @@ export default function OrderForm({ selectedProduct = products[0], selectedOffer
       transition={{ duration: 0.65, ease: "easeOut" }}
       noValidate
     >
-      <div className="mb-7 rounded-3xl border border-gold/30 bg-chalk p-5">
+      <div className="mb-7 rounded-3xl border border-gold/30 bg-chalk p-4 sm:p-5">
         <div className="flex items-start gap-3">
           <span className="mt-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full bg-ink text-dune">
             <PackageCheck size={18} />
@@ -221,9 +265,9 @@ export default function OrderForm({ selectedProduct = products[0], selectedOffer
           <FieldError message={errors.quantity} />
         </label>
 
-        <div className="rounded-3xl border border-ink/10 bg-paper p-5">
+        <div className="min-w-0 rounded-3xl border border-ink/10 bg-paper p-5">
           <p className="text-xs font-black uppercase tracking-[0.2em] text-smoke">Estimated total</p>
-          <p className="mt-2 text-3xl font-black text-ink">{totalLabel}</p>
+          <p className="mt-2 break-words text-3xl font-black text-ink">{totalLabel}</p>
           <p className="mt-2 text-xs font-bold text-smoke">COD only. Delivery confirmation by phone.</p>
         </div>
 

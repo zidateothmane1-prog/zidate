@@ -1,14 +1,11 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import {
   ArrowRight,
-  Camera,
   Check,
   ChevronDown,
   Menu,
-  MessageCircle,
   PackageCheck,
-  Shirt,
   Sparkles,
   Truck,
   X,
@@ -40,7 +37,7 @@ function Section({ id, eyebrow, title, text, children, className = "" }) {
   return (
     <section id={id} className={`section-padding ${className}`}>
       <motion.div
-        className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8"
+        className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true, margin: "-90px" }}
@@ -101,14 +98,14 @@ function Header() {
   const [open, setOpen] = useState(false);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/10 bg-paper/82 backdrop-blur-xl">
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-5 sm:px-6 lg:px-8">
-        <Link to="/" onClick={() => setOpen(false)} className="group flex items-center gap-3" aria-label="Go to home">
+    <header className="fixed inset-x-0 top-0 z-50 border-b border-black/10 bg-paper/90 backdrop-blur-xl">
+      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-3 px-4 sm:px-6 lg:px-8">
+        <Link to="/" onClick={() => setOpen(false)} className="group flex min-w-0 items-center gap-3" aria-label="Go to home">
           <span className="grid h-10 w-10 place-items-center rounded-full border border-ink/15 bg-white text-[0.72rem] font-black tracking-[0.22em] text-ink shadow-sm">
             Z
           </span>
-          <span>
-            <span className="block text-lg font-black tracking-[0.32em] text-ink">ZIDATE</span>
+          <span className="min-w-0">
+            <span className="block text-base font-black tracking-[0.28em] text-ink sm:text-lg sm:tracking-[0.32em]">ZIDATE</span>
             <span className="block text-left text-[0.68rem] font-semibold uppercase tracking-[0.28em] text-smoke">
               Daily Essentials
             </span>
@@ -139,7 +136,7 @@ function Header() {
       <AnimatePresence>
         {open && (
           <motion.div
-            className="border-t border-ink/10 bg-paper px-5 pb-5 lg:hidden"
+            className="max-h-[calc(100vh-5rem)] overflow-y-auto border-t border-ink/10 bg-paper px-4 pb-5 shadow-soft lg:hidden"
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
@@ -170,13 +167,13 @@ function Header() {
 function ProductMockup() {
   return (
     <motion.div
-      className="relative mx-auto aspect-[0.86] w-full max-w-[460px] overflow-hidden rounded-[2rem] border border-white/50 bg-[#e9e5dc] p-5 shadow-soft"
+      className="relative mx-auto aspect-[0.86] w-full max-w-[460px] overflow-hidden rounded-[1.5rem] border border-white/50 bg-[#e9e5dc] p-4 shadow-soft sm:rounded-[2rem] sm:p-5"
       initial={{ opacity: 0, scale: 0.94, rotate: 1.5 }}
       animate={{ opacity: 1, scale: 1, rotate: 0 }}
       transition={{ duration: 0.8, delay: 0.2, ease: "easeOut" }}
     >
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_35%_20%,rgba(255,255,255,0.85),transparent_34%),linear-gradient(135deg,rgba(184,155,88,0.18),transparent_45%)]" />
-      <div className="absolute right-5 top-5 rounded-full border border-ink/10 bg-paper/80 px-4 py-2 text-xs font-black uppercase tracking-[0.2em] text-ink">
+      <div className="absolute right-4 top-4 rounded-full border border-ink/10 bg-paper/80 px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.14em] text-ink sm:right-5 sm:top-5 sm:px-4 sm:text-xs sm:tracking-[0.2em]">
         COD Morocco
       </div>
       <div className="relative flex h-full flex-col justify-end">
@@ -184,14 +181,14 @@ function ProductMockup() {
         <div className="product-shirt shirt-front">
           <span>ZIDATE</span>
         </div>
-        <div className="absolute bottom-5 left-5 right-5 rounded-3xl border border-white/45 bg-ink/88 p-5 text-paper backdrop-blur">
+        <div className="absolute bottom-4 left-4 right-4 rounded-3xl border border-white/45 bg-ink/88 p-4 text-paper backdrop-blur sm:bottom-5 sm:left-5 sm:right-5 sm:p-5">
           <p className="text-[0.68rem] font-bold uppercase tracking-[0.24em] text-dune">Launch Offer</p>
           <div className="mt-2 flex items-end justify-between gap-4">
             <div>
-              <p className="text-3xl font-black tracking-tight">3 T-Shirts</p>
+              <p className="text-2xl font-black tracking-tight sm:text-3xl">3 T-Shirts</p>
               <p className="text-sm text-paper/70">Best daily rotation</p>
             </div>
-            <p className="text-4xl font-black text-dune">229</p>
+            <p className="text-3xl font-black text-dune sm:text-4xl">229</p>
           </div>
         </div>
       </div>
@@ -211,7 +208,7 @@ function ProductVisual({ product, className = "" }) {
           : "from-white to-[#ebe7df]";
 
   return (
-    <div className={`relative aspect-[4/5] overflow-hidden rounded-[1.5rem] border border-ink/10 bg-chalk ${className}`}>
+    <div className={`relative aspect-[4/5] min-w-0 overflow-hidden rounded-[1.5rem] border border-ink/10 bg-chalk ${className}`}>
       {!failed && (
         <img
           src={product.image}
@@ -228,7 +225,7 @@ function ProductVisual({ product, className = "" }) {
           </div>
         </div>
       )}
-      <span className={`absolute left-4 top-4 rounded-full px-3 py-2 text-xs font-black uppercase tracking-[0.16em] ${product.status === "Available" ? "bg-ink text-dune" : "bg-white/85 text-ink"}`}>
+      <span className={`absolute left-3 top-3 rounded-full px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.12em] sm:left-4 sm:top-4 sm:text-xs sm:tracking-[0.16em] ${product.status === "Available" ? "bg-ink text-dune" : "bg-white/85 text-ink"}`}>
         {product.status}
       </span>
     </div>
@@ -238,7 +235,7 @@ function ProductVisual({ product, className = "" }) {
 function ProductCard({ product }) {
   const available = product.status === "Available";
   return (
-    <motion.article className="group rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm transition hover:-translate-y-2 hover:shadow-soft" whileHover={{ scale: 1.01 }}>
+    <motion.article className="group min-w-0 rounded-[1.75rem] border border-ink/10 bg-white p-4 shadow-sm transition hover:-translate-y-2 hover:shadow-soft" whileHover={{ scale: 1.01 }}>
       <ProductVisual product={product} />
       <div className="p-2 pt-5">
         <p className="text-xs font-black uppercase tracking-[0.2em] text-gold">{product.category}</p>
@@ -261,24 +258,24 @@ function ProductCard({ product }) {
 
 function Hero() {
   return (
-    <section className="relative min-h-screen overflow-hidden bg-paper pt-28">
+    <section className="relative overflow-hidden bg-paper pt-28 lg:min-h-screen">
       <div className="absolute inset-0 subtle-grid" />
-      <div className="mx-auto grid min-h-[calc(100vh-7rem)] max-w-7xl items-center gap-12 px-5 pb-16 sm:px-6 lg:grid-cols-[1.05fr_0.95fr] lg:px-8">
+      <div className="mx-auto grid max-w-7xl items-center gap-10 px-4 pb-16 sm:px-6 lg:min-h-[calc(100vh-7rem)] lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 lg:px-8">
         <motion.div initial="hidden" animate="visible" transition={{ staggerChildren: 0.12 }}>
           <motion.p variants={fadeUp} className="badge">
             Moroccan Streetwear Essentials
           </motion.p>
-          <motion.h1 variants={fadeUp} className="mt-6 max-w-4xl text-5xl font-black leading-[0.96] tracking-tight text-ink sm:text-6xl lg:text-7xl">
+          <motion.h1 variants={fadeUp} className="mt-6 max-w-4xl text-[2.65rem] font-black leading-[0.98] tracking-tight text-ink min-[390px]:text-5xl sm:text-6xl lg:text-7xl">
             Daily Essentials, Made Clean.
           </motion.h1>
-          <motion.p variants={fadeUp} className="mt-6 max-w-xl text-lg leading-8 text-smoke">
+          <motion.p variants={fadeUp} className="mt-6 max-w-xl text-base leading-8 text-smoke sm:text-lg">
             Moroccan streetwear essentials made for comfort, simplicity, and everyday style.
           </motion.p>
           <motion.div variants={fadeUp} className="mt-8 flex flex-col gap-3 sm:flex-row">
-            <Link to="/products" className="btn-primary">
+            <Link to="/products" className="btn-primary w-full sm:w-auto">
               Explore Products <ArrowRight size={18} />
             </Link>
-            <Link to="/offers" className="btn-secondary">
+            <Link to="/offers" className="btn-secondary w-full sm:w-auto">
               View Offers
             </Link>
           </motion.div>
@@ -339,7 +336,7 @@ function ProductsPage() {
   return (
     <PageShell>
       <Section className="bg-paper pt-32" eyebrow="Products" title="Explore the ZIDATE Collection" text="Clean everyday pieces made for comfort, simplicity, and style.">
-        <div className="mb-8 flex gap-2 overflow-x-auto pb-2">
+        <div className="-mx-4 mb-8 flex gap-2 overflow-x-auto px-4 pb-2 sm:mx-0 sm:px-0">
           {categories.map((category) => (
             <button key={category} onClick={() => setActive(category)} className={`shrink-0 rounded-full border px-5 py-3 text-sm font-black transition ${active === category ? "border-ink bg-ink text-paper" : "border-ink/10 bg-white text-ink hover:border-gold/60"}`}>
               {category}
@@ -358,15 +355,15 @@ function OfferCard({ offer }) {
   const orderPath = `/order?product=white-oversized-tshirt&offer=${offer.slug}`;
   return (
     <motion.div
-      className={`relative grid gap-6 rounded-[1.75rem] border bg-white p-6 shadow-soft transition duration-300 hover:-translate-y-2 md:grid-cols-[0.72fr_1fr] sm:p-8 ${offer.best ? "border-gold shadow-gold" : "border-ink/10"}`}
+      className={`relative grid min-w-0 gap-6 rounded-[1.75rem] border bg-white p-4 shadow-soft transition duration-300 hover:-translate-y-2 md:grid-cols-[0.72fr_1fr] sm:p-8 ${offer.best ? "border-gold shadow-gold" : "border-ink/10"}`}
       whileHover={{ scale: 1.01 }}
     >
-      {offer.best && <span className="absolute right-6 top-6 rounded-full bg-ink px-4 py-2 text-xs font-black uppercase tracking-[0.18em] text-dune">Best Offer</span>}
+      {offer.best && <span className="absolute right-5 top-5 z-10 rounded-full bg-ink px-3 py-2 text-[0.65rem] font-black uppercase tracking-[0.14em] text-dune sm:right-6 sm:top-6 sm:px-4 sm:text-xs sm:tracking-[0.18em]">Best Offer</span>}
       <ProductVisual product={products[0]} className="max-h-[360px]" />
       <div>
         <p className="text-sm font-black uppercase tracking-[0.22em] text-gold">ZIDATE Pack</p>
-        <h3 className="mt-5 text-3xl font-black text-ink">{offer.title}</h3>
-        <p className="mt-3 text-6xl font-black tracking-tight text-ink">{offer.price} DH</p>
+        <h3 className="mt-5 text-2xl font-black text-ink sm:text-3xl">{offer.title}</h3>
+        <p className="mt-3 text-5xl font-black tracking-tight text-ink sm:text-6xl">{offer.price} DH</p>
         <p className="mt-4 text-sm leading-7 text-smoke">{offer.description}</p>
         <ul className="mt-7 grid gap-3 sm:grid-cols-2">
           {offer.features.map((feature) => (
@@ -378,7 +375,7 @@ function OfferCard({ offer }) {
         </ul>
         <div className="mt-7 flex flex-wrap items-center gap-3">
           <span className="mini-pill"><PackageCheck size={16} /> COD</span>
-          <Link to={orderPath} className={`btn-primary ${offer.best ? "" : "bg-chalk text-ink hover:bg-mist"}`}>
+          <Link to={orderPath} className={`btn-primary w-full sm:w-auto ${offer.best ? "" : "bg-chalk text-ink hover:bg-mist"}`}>
             Order Now <ArrowRight size={17} />
           </Link>
         </div>
@@ -470,28 +467,32 @@ function OrderPage() {
   const query = new URLSearchParams(location.search);
   const product = getProductBySlug(query.get("product"));
   const offer = getOfferBySlug(query.get("offer"));
+  const [summary, setSummary] = useState({ offer, quantity: 1, estimatedTotal: offer.price });
+  const handleSelectionChange = useCallback((nextSummary) => {
+    setSummary(nextSummary);
+  }, []);
 
   return (
     <PageShell>
       <Section className="bg-chalk pt-32" eyebrow="COD Checkout" title="Confirm your ZIDATE order." text="Review your selected product, fill your delivery details, and pay only when your order arrives.">
-        <div className="grid items-start gap-8 lg:grid-cols-[0.8fr_1.2fr]">
-          <div className="sticky top-24 rounded-[2rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-7">
+        <div className="grid min-w-0 items-start gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="min-w-0 rounded-[2rem] border border-ink/10 bg-white p-5 shadow-soft sm:p-7 lg:sticky lg:top-24">
             <ProductVisual product={product} />
             <div className="mt-6">
               <p className="eyebrow">Order Summary</p>
               <h3 className="mt-3 text-2xl font-black text-ink">{product.name}</h3>
               <div className="mt-5 space-y-3 text-sm font-bold text-smoke">
                 <p>Product color: <span className="text-ink">{product.color}</span></p>
-                <p>Selected offer: <span className="text-ink">{offer.label}</span></p>
-                <p>Price: <span className="text-ink">{offer.price} DH</span></p>
-                <p>Quantity: <span className="text-ink">1+</span></p>
-                <p>Estimated total: <span className="text-ink">Updated in form</span></p>
+                <p>Selected offer: <span className="text-ink">{summary.offer.label}</span></p>
+                <p>Price: <span className="text-ink">{summary.offer.price} DH</span></p>
+                <p>Quantity: <span className="text-ink">{summary.quantity}</span></p>
+                <p>Estimated total: <span className="text-ink">{summary.estimatedTotal} DH</span></p>
               </div>
               <span className="mini-pill mt-5"><PackageCheck size={16} /> Cash on Delivery</span>
               <button onClick={() => navigate("/products")} className="btn-secondary mt-5 w-full">Change Product</button>
             </div>
           </div>
-          <OrderForm key={`${product.slug}-${offer.slug}`} selectedProduct={product} selectedOffer={offer} />
+          <OrderForm key={`${product.slug}-${offer.slug}`} selectedProduct={product} selectedOffer={offer} onSelectionChange={handleSelectionChange} />
         </div>
       </Section>
     </PageShell>
